@@ -1,0 +1,549 @@
+<!-- Crie um arquivo index.html com este conteúdo -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmácia Gest - Sistema de Gestão Documental</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #001736;
+            --secondary: #0044cc;
+            --accent: #00C853;
+            --pharma-blue: #0066cc;
+            --pharma-green: #009688;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .login-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .login-header i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .login-body {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--pharma-blue);
+            box-shadow: 0 0 0 3px rgba(0, 103, 204, 0.1);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--pharma-blue), var(--pharma-green));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 103, 204, 0.3);
+        }
+        
+        .credentials-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .credentials-info h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .dashboard {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .dashboard-header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn-action {
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-action:hover {
+            background: var(--pharma-blue);
+        }
+        
+        .content-area {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-height: 200px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- TELA DE LOGIN -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-header">
+            <i class="fas fa-prescription-bottle-alt"></i>
+            <h1>Farmácia Gest</h1>
+            <p>Sistema de Gestão Documental</p>
+        </div>
+        
+        <div class="login-body">
+            <div class="error-message" id="errorMessage"></div>
+            
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="email">
+                        <i class="fas fa-envelope"></i> E-mail
+                    </label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="seu@email.com" 
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Senha
+                    </label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Sua senha" 
+                        required
+                        autocomplete="current-password"
+                    >
+                </div>
+                
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Entrar no Sistema
+                </button>
+            </form>
+            
+            <div class="credentials-info">
+                <h4><i class="fas fa-info-circle"></i> Credenciais de Teste</h4>
+                <p><strong>Administrador:</strong><br>admin@farmacia.com / 123456</p>
+                <p><strong>Farmacêutico:</strong><br>farmaceutico@farmacia.com / 123456</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- DASHBOARD -->
+    <div class="dashboard" id="dashboardScreen">
+        <div class="dashboard-header">
+            <div>
+                <h1>🏥 Farmácia Gest - Dashboard</h1>
+                <p>Bem-vindo, <span id="userName">Usuário</span>! | <span id="userNivel">Nível</span></p>
+            </div>
+            <button class="btn-action" onclick="fazerLogout()">
+                <i class="fas fa-sign-out-alt"></i> Sair
+            </button>
+        </div>
+        
+        <div class="stats-grid" id="statsContainer">
+            <!-- Estatísticas carregadas via API -->
+        </div>
+        
+        <div class="actions">
+            <button class="btn-action" onclick="criarDocumento()">
+                <i class="fas fa-plus"></i> Novo Documento
+            </button>
+            <button class="btn-action" onclick="carregarDocumentos()">
+                <i class="fas fa-file"></i> Ver Documentos
+            </button>
+            <button class="btn-action" onclick="carregarAlertas()">
+                <i class="fas fa-bell"></i> Ver Alertas
+            </button>
+            <button class="btn-action" onclick="carregarUsuarios()">
+                <i class="fas fa-users"></i> Ver Usuários
+            </button>
+        </div>
+        
+        <div class="content-area" id="contentArea">
+            <div class="loading">
+                <i class="fas fa-mouse-pointer"></i>
+                <p>Selecione uma ação acima para começar</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SUA URL DO WEB APP - JÁ CONFIGURADA
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyLRblP47UADulV1zsRSJUylDCDu5oRSRgmxSLfgSM/exec';
+        
+        let usuarioLogado = null;
+
+        // Função principal de login
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            
+            // Mostrar loading
+            const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+            btn.disabled = true;
+            
+            try {
+                const resultado = await apiCall('login', { email, senha: password });
+                
+                if (resultado.success) {
+                    usuarioLogado = resultado.usuario;
+                    mostrarDashboard();
+                } else {
+                    throw new Error(resultado.message);
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.style.display = 'block';
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Funções da API
+        async function apiCall(action, data = null, method = 'GET') {
+            try {
+                let url = `${API_URL}?action=${action}`;
+                
+                if (method === 'GET' && data) {
+                    const params = new URLSearchParams(data);
+                    url += '&' + params.toString();
+                }
+                
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (method === 'POST' && data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Erro na requisição');
+                }
+                
+                return result.data;
+            } catch (error) {
+                console.error('Erro na API:', error);
+                throw error;
+            }
+        }
+
+        // Mostrar dashboard após login
+        function mostrarDashboard() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('dashboardScreen').style.display = 'block';
+            document.getElementById('userName').textContent = usuarioLogado.nome;
+            document.getElementById('userNivel').textContent = usuarioLogado.nivel_acesso;
+            
+            carregarDashboard();
+        }
+
+        // Logout
+        function fazerLogout() {
+            usuarioLogado = null;
+            document.getElementById('dashboardScreen').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('loginForm').reset();
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Carregar dados do dashboard
+        async function carregarDashboard() {
+            try {
+                showLoading('Carregando dashboard...');
+                const data = await apiCall('getDashboardData');
+                
+                const statsHTML = `
+                    <div class="stat-card">
+                        <h3>${data.documentosAtivos}</h3>
+                        <p>Documentos Ativos</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${data.alertasPendentes}</h3>
+                        <p>Alertas Pendentes</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${data.conformidade}</h3>
+                        <p>Conformidade RDC 67</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>${data.vencimentosProximos}</h3>
+                        <p>Vencimentos Próximos</p>
+                    </div>
+                `;
+                
+                document.getElementById('statsContainer').innerHTML = statsHTML;
+                showContent('<p style="text-align: center; color: #666;">Dashboard carregado com sucesso!</p>');
+            } catch (error) {
+                showContent('<p style="color: red;">Erro ao carregar dashboard: ' + error.message + '</p>');
+            }
+        }
+
+        // Carregar documentos
+        async function carregarDocumentos() {
+            try {
+                showLoading('Carregando documentos...');
+                const documentos = await apiCall('getDocumentos');
+                const contentHTML = `
+                    <h3><i class="fas fa-file-contract"></i> Documentos (${documentos.length})</h3>
+                    <div style="margin-top: 15px;">
+                        ${documentos.map(doc => `
+                            <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                                <strong>${doc.titulo}</strong><br>
+                                <small>
+                                    Tipo: ${doc.tipoDocumento} | 
+                                    Responsável: ${doc.responsavel} | 
+                                    Vence: ${new Date(doc.dataValidade).toLocaleDateString('pt-BR')} |
+                                    Status: <span style="color: ${doc.status === 'Ativo' ? 'green' : 'red'}">${doc.status}</span>
+                                </small>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                showContent(contentHTML);
+            } catch (error) {
+                showContent('<p style="color: red;">Erro ao carregar documentos: ' + error.message + '</p>');
+            }
+        }
+
+        // Carregar alertas
+        async function carregarAlertas() {
+            try {
+                showLoading('Carregando alertas...');
+                const alertas = await apiCall('getAlertas');
+                const contentHTML = `
+                    <h3><i class="fas fa-bell"></i> Alertas (${alertas.length})</h3>
+                    <div style="margin-top: 15px;">
+                        ${alertas.map(alerta => `
+                            <div style="padding: 10px; border-left: 4px solid ${alerta.gravidade.includes('CRÍTICO') ? 'red' : alerta.gravidade.includes('ALERTA') ? 'orange' : 'green'}; margin-bottom: 10px; background: #f8f9fa;">
+                                <strong>${alerta.tipo}: ${alerta.item}</strong><br>
+                                <small>
+                                    ${alerta.gravidade} | 
+                                    ${alerta.dias_restantes} dias restantes | 
+                                    Responsável: ${alerta.responsavel}<br>
+                                    Vence em: ${alerta.data_validade}
+                                </small>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                showContent(contentHTML);
+            } catch (error) {
+                showContent('<p style="color: red;">Erro ao carregar alertas: ' + error.message + '</p>');
+            }
+        }
+
+        // Carregar usuários
+        async function carregarUsuarios() {
+            try {
+                showLoading('Carregando usuários...');
+                const usuarios = await apiCall('getUsuarios');
+                const contentHTML = `
+                    <h3><i class="fas fa-users"></i> Usuários do Sistema (${usuarios.length})</h3>
+                    <div style="margin-top: 15px;">
+                        ${usuarios.map(usuario => `
+                            <div style="padding: 10px; border-bottom: 1px solid #eee;">
+                                <strong>${usuario.nome}</strong> (${usuario.email})<br>
+                                <small>
+                                    Nível: ${usuario.nivel_acesso} | 
+                                    Setor: ${usuario.setor} | 
+                                    Status: <span style="color: ${usuario.status === 'Ativo' ? 'green' : 'red'}">${usuario.status}</span>
+                                </small>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                showContent(contentHTML);
+            } catch (error) {
+                showContent('<p style="color: red;">Erro ao carregar usuários: ' + error.message + '</p>');
+            }
+        }
+
+        // Criar novo documento
+        async function criarDocumento() {
+            const titulo = prompt('Digite o título do novo documento:');
+            if (titulo) {
+                try {
+                    const resultado = await apiCall('criarDocumento', {
+                        titulo: titulo,
+                        responsavel: usuarioLogado.nome,
+                        setor: usuarioLogado.setor,
+                        descricao: 'Documento criado via sistema Farmácia Gest',
+                        dataValidade: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 dias
+                        tipoDocumento: 'POP'
+                    }, 'POST');
+                    
+                    alert('✅ Documento criado com sucesso!');
+                    carregarDashboard();
+                    carregarDocumentos();
+                } catch (error) {
+                    alert('❌ Erro ao criar documento: ' + error.message);
+                }
+            }
+        }
+
+        // Funções auxiliares de UI
+        function showLoading(message = 'Carregando...') {
+            document.getElementById('contentArea').innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function showContent(html) {
+            document.getElementById('contentArea').innerHTML = html;
+        }
+
+        // Focar no campo email ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('email').focus();
+        });
+    </script>
+</body>
+</html>
